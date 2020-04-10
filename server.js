@@ -25,23 +25,23 @@ app.get("/api/notes", (req, res) => {
     fs.readFile(filePath, "utf8", (err,data)=>{
         if (err) throw err;
 
-        const parsedData = JSON.parse(data);
-        return res.json(parsedData);
+        let savedNotes = JSON.parse(data);
+        return res.json(savedNotes);
     });
   });
 
 app.post("/api/notes", (req, res) => {
-    const newNote = req.body;
+    let newNote = req.body;
     console.log(newNote);
     
     notes.push(newNote);
     
     fs.writeFile("/db/db.json", JSON.stringify(notes), function(err){
         if (err) throw err;
-    
+        
     });
-
     res.json(newNote);
+
   });
 
 
