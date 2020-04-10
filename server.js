@@ -26,23 +26,23 @@ app.get("/api/notes", (req, res) => {
         if (err) throw err;
 
         const parsedData = JSON.parse(data);
-        res.json(parsedData);
+        return res.json(parsedData);
     });
   });
 
-// app.post("/api/notes", (req, res) => {
-//     const newNote = req.body;
-//     console.log(newNote);
+app.post("/api/notes", (req, res) => {
+    const newNote = req.body;
+    console.log(newNote);
     
-//     notes.push(newNote);
+    notes.push(newNote);
     
-//     fs.writeFile("/db/db.json", JSON.stringify(notes), function(err){
-//         if (err) throw err;
+    fs.writeFile("/db/db.json", JSON.stringify(notes), function(err){
+        if (err) throw err;
     
-//     });
+    });
 
-//     res.json(newNote);
-//   });
+    res.json(newNote);
+  });
 
 
 
