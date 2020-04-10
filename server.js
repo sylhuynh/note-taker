@@ -8,56 +8,53 @@ const app = express();
 
 const PORT = process.env.PORT || 3000;
 
+app.use(express.static(path.join(__dirname, "/public")));
+app.use(express.static(path.join(__dirname, "/public/assets")));
+app.use(express.static(path.join(__dirname, "/public/assets/js")));
+app.use(express.static(path.join(__dirname, "/public/assets/css")));
+
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 let notes = [];
 
 //Routes
+
 app.get("/notes", (req, res) => {
     res.sendFile(path.join(__dirname, "/public/notes.html"));
-  });
+});
 
-
-app.get("/api/notes", (req, res) => {
-    const filePath = path.join(__dirname, "/db/db.json");
-
-    fs.readFile(filePath, "utf8", (err,data)=>{
-        if (err) throw err;
-
-        let savedNotes = JSON.parse(data);
-        return res.json(savedNotes);
-    });
-  });
-
-app.post("/api/notes", (req, res) => {
-    let newNote = req.body;
-    console.log(newNote);
-    
-    notes.push(newNote);
-    
-    fs.writeFile("/db/db.json", JSON.stringify(notes), function(err){
-        if (err) throw err;
-        
-    });
-    res.json(newNote);
-
-  });
-
-
-
-
-
-
-
-
+app.get("/api/notes", (req, res) => {    
+    res.sendFile(path.join(__dirname, "/db/db.json"));
+});
 
 app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "/public/index.html"));
+    res.sendFile(path.join(__dirname, "/public/index.html"));
+});
+
+app.post("/api/notes", (req, res) => {
+    const filePath = path.join(__dirname, "/db/db.json");
+
+    fs.readFile(filePath, "utf8", (err, data) => {
+        if (err) throw err;
+        
+        let savedNotes = JSON.parse(data);
+        res.json(savedNotes);
+    });
+
+    let newNote = req.body;
+    console.log(newNote);
+    notes.push(newNote);
+    
+    fs.writeFileSync(filePath, JSON.stringify(notes), function (err) {
+        if (err) throw err;
+        res.json(newNote);
+    });
+    
 });
 
 
 //starts the server to start listening
 app.listen(PORT, () => {
-  console.log("App listening on PORT " + PORT);
+    console.log("App listening on PORT " + PORT);
 });
