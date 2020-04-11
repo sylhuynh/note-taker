@@ -9,9 +9,6 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(express.static(path.join(__dirname, "/public")));
-app.use(express.static(path.join(__dirname, "/public/assets")));
-app.use(express.static(path.join(__dirname, "/public/assets/js")));
-app.use(express.static(path.join(__dirname, "/public/assets/css")));
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -24,7 +21,7 @@ app.get("/notes", (req, res) => {
     res.sendFile(path.join(__dirname, "/public/notes.html"));
 });
 
-app.get("/api/notes", (req, res) => {    
+app.get("/api/notes", (req, res) => {
     res.sendFile(path.join(__dirname, "/db/db.json"));
 });
 
@@ -37,20 +34,41 @@ app.post("/api/notes", (req, res) => {
 
     fs.readFile(filePath, "utf8", (err, data) => {
         if (err) throw err;
-        
+
         let savedNotes = JSON.parse(data);
         res.json(savedNotes);
     });
 
     let newNote = req.body;
+    newNote.id = notes.length;
     console.log(newNote);
     notes.push(newNote);
-    
+
     fs.writeFileSync(filePath, JSON.stringify(notes), function (err) {
         if (err) throw err;
         res.json(newNote);
     });
+
+});
+
+app.delete("/api/notes/:id", (req, res) => {
+    const filePath = path.join(__dirname, "/db/db.json");
+    let indexToDel;
     
+    notes.forEach(note => {
+        if(note.id.toString() === req.params.id)
+            indexToDel = note.id;
+    });
+
+    if (indexToDel === -1) {
+        return res.sendStatus(404);
+    }
+    notes.splice(indexToDel, 1);
+    fs.writeFileSync(filePath, JSON.stringify(notes), function (err) {
+        if (err) throw err;
+    });
+    return res.sendStatus(200);
+
 });
 
 
