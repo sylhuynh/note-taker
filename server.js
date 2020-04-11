@@ -61,6 +61,7 @@ app.delete("/api/notes/:id", (req, res) => {
     });
 
     if (indexToDel === -1) {
+        notes.empty();
         return res.sendStatus(404);
     }
     notes.splice(indexToDel, 1);
