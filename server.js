@@ -41,6 +41,7 @@ app.post("/api/notes", (req, res) => {
 
     let newNote = req.body;
     newNote.id = notes.length;
+    console.log("newNoteId:" + newNote.id);
     console.log(newNote);
     notes.push(newNote);
 
@@ -53,18 +54,12 @@ app.post("/api/notes", (req, res) => {
 
 app.delete("/api/notes/:id", (req, res) => {
     const filePath = path.join(__dirname, "/db/db.json");
-    let indexToDel;
-    
-    notes.forEach(note => {
-        if(note.id.toString() === req.params.id)
-            indexToDel = note.id;
-    });
 
-    if (indexToDel === -1) {
-        notes.empty();
-        return res.sendStatus(404);
-    }
-    notes.splice(indexToDel, 1);
+    notes = notes.filter(note => {
+        return note.id.toString() !== req.params.id
+     });
+
+    console.log(notes)
     fs.writeFileSync(filePath, JSON.stringify(notes), function (err) {
         if (err) throw err;
     });
